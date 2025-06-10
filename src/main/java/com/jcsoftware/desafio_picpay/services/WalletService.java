@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jcsoftware.desafio_picpay.entities.Wallet;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
@@ -14,6 +15,8 @@ import com.jcsoftware.desafio_picpay.repositories.WalletRepository;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedDocException;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedEmailException;
 import com.jcsoftware.desafio_picpay.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class WalletService {
@@ -64,6 +67,22 @@ public class WalletService {
 		WalletDTO dto = new WalletDTO(wallet);
 		return dto;
 		
+	}
+
+	@Transactional
+	public WalletDTO deposit(Long id, BigDecimal value) {
+		
+		try {
+			Wallet wallet = repository.getReferenceById(id);
+			//copyDtoToEntity(dto, product);
+			wallet.setBalance(wallet.getBalance().add(value));
+			wallet = repository.save(wallet);
+			return new WalletDTO(wallet);
+		} catch (EntityNotFoundException e) {
+			throw (new ResourceNotFoundException());
+		}
+		
+
 	}
 	
 	
