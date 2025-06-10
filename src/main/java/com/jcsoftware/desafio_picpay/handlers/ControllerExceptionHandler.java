@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.jcsoftware.desafio_picpay.controllers.exceptions.StandardError;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedDocException;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedEmailException;
+import com.jcsoftware.desafio_picpay.services.exceptions.ResourceNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -34,6 +35,15 @@ public class ControllerExceptionHandler {
 		StandardError err = new StandardError(Instant.now(),status.value(),error,e.getMessage(),request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 		
+	}
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e,HttpServletRequest request){
+		
+		String error = "Resource not found";
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		StandardError err = new StandardError(Instant.now(),status.value(),error,e.getMessage(),request.getRequestURI());
+		return ResponseEntity.status(status).body(err);
 	}
 
 }
