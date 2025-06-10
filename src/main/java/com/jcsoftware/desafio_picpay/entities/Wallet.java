@@ -1,11 +1,14 @@
 package com.jcsoftware.desafio_picpay.entities;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.jcsoftware.desafio_picpay.entities.enums.WalletType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,13 +27,16 @@ public class Wallet {
 	@Column(unique = true)
 	private String doc;
 	private String password;
+	@Enumerated(EnumType.STRING)
 	private WalletType type;
+	@Column(precision = 10, scale = 2)
+	private BigDecimal balance;
 	
 	public Wallet() {
 		
 	}
 
-	public Wallet(Long id, String fullName, String email, String doc, String password, WalletType walletType) {
+	public Wallet(Long id, String fullName, String email, String doc, String password, WalletType walletType,BigDecimal balance) {
 		super();
 		this.id = id;
 		this.fullName = fullName;
@@ -38,6 +44,7 @@ public class Wallet {
 		this.doc = doc;
 		this.password = password;
 		this.type = walletType;
+		this.balance = balance;
 	}
 
 	public Long getId() {
@@ -80,14 +87,24 @@ public class Wallet {
 		this.password = password;
 	}
 
-	public WalletType getWalletType() {
+	public WalletType getType() {
 		return type;
 	}
 
-	public void setWalletType(WalletType walletType) {
+	public void seType(WalletType walletType) {
 		this.type = walletType;
 	}
 	
+	
+	
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
 	/*
 	public OrderStatus getOrderStatus() {
 		return OrderStatus.valueOf(status);
