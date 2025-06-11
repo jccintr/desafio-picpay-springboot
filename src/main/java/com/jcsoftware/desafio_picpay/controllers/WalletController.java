@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.jcsoftware.desafio_picpay.entities.dtos.BalanceDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.DepositDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.WalletDTO;
@@ -47,8 +48,8 @@ public class WalletController {
 	}
 	
 	@PostMapping(value="/{id}/deposit")
-	public ResponseEntity<WalletDTO> deposit(@PathVariable Long id,@RequestBody DepositDTO dto){
-		WalletDTO walletDTO = service.deposit(id,dto.value());
-		return ResponseEntity.ok().body(walletDTO);
+	public ResponseEntity<BalanceDTO> deposit(@PathVariable Long id,@RequestBody DepositDTO dto){
+		BalanceDTO balance = service.deposit(id,dto.value());
+		return ResponseEntity.ok().body(balance);
 	}
 }

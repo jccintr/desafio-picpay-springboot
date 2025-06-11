@@ -23,12 +23,15 @@ public class Transaction {
 	
 	
 	private BigDecimal amount;
+	
 	@ManyToOne
 	@JoinColumn(name = "payer_id")
 	private Wallet payer;
+	
 	@ManyToOne
 	@JoinColumn(name = "payee_id")
 	private Wallet payee;
+	
 	@Column(columnDefinition="TIMESTAMP WITHOUT TIME ZONE")
 	private Instant createdAt;
 	

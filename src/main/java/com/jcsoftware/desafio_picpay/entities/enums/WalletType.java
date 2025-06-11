@@ -1,11 +1,11 @@
 package com.jcsoftware.desafio_picpay.entities.enums;
 
 public enum WalletType {
-	COMMON(1),
-	MERCHANT(2);
+	CLIENT,
+	MERCHANT;
 	
-	private int value;
-	
+	//private int value;
+	/*
 	WalletType(int value) {
 		this.value = value;
 	}
@@ -13,5 +13,5 @@ public enum WalletType {
 	public int getValue() {
 		return value;
 	}
-	
+	*/
 }
