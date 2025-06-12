@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import com.jcsoftware.desafio_picpay.entities.Wallet;
+import com.jcsoftware.desafio_picpay.entities.dtos.AuthorizationResponseDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.BalanceDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferDTO;
@@ -27,6 +32,14 @@ public class WalletService {
 
 	@Autowired
 	private WalletRepository repository;
+	
+	 @Autowired
+	 private AuthorizationService authorizationService;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	private final String AUTH_URL = "https://util.devi.tools/api/v2/authorize";
 
 	public NewWalletDTO insert(NewWalletDTO dto) {
 		
@@ -95,26 +108,33 @@ public class WalletService {
 		Wallet payer = findWalletById(dto.payer());
 		Wallet payee = findWalletById(dto.payee());
 		
-	    if (payer.getBalance().compareTo(dto.value()) >= 0) {
-	    	
-	        payer.setBalance(payer.getBalance().subtract(dto.value()));
-	        repository.save(payer);
+		if (payer.getBalance().compareTo(dto.value()) < 0) {
+			return new TransferResponseDTO("Transação não Autorizada (saldo insuficiente");
+		}
+		
+		if (!authorizationService.isAuthorized()) {
+            return new TransferResponseDTO("Transação não Autorizada (autorização negada)");
+        }
+	    
+       
+        payer.setBalance(payer.getBalance().subtract(dto.value()));
+        repository.save(payer);
 
-	        payee.setBalance(payee.getBalance().add(dto.value()));
-	        repository.save(payee);
+        payee.setBalance(payee.getBalance().add(dto.value()));
+        repository.save(payee);
 
-	        return new TransferResponseDTO("Transação Autorizada");
-	        
-	    } else {
-	    	
-	        return new TransferResponseDTO("Transação não Autorizada");
-	        
-	    }
-	}
+        return new TransferResponseDTO("Transação Autorizada");
+        
+ 	}
 	
 	private Wallet findWalletById(Long id) {
 		 return repository.findById(id)
 			        .orElseThrow(WalletNotFoundException::new);
+	}
+	
+	private String callAuthorizationMock() {
+	    String url = "https://util.devi.tools/api/v2/authorize";
+	    return restTemplate.getForObject(url, String.class);
 	}
 	
 }
