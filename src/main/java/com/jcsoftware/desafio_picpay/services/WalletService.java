@@ -5,20 +5,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import com.jcsoftware.desafio_picpay.entities.Wallet;
-import com.jcsoftware.desafio_picpay.entities.dtos.AuthorizationResponseDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.BalanceDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferResponseDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.WalletDTO;
+import com.jcsoftware.desafio_picpay.repositories.DepositRepository;
 import com.jcsoftware.desafio_picpay.repositories.WalletRepository;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedDocException;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedEmailException;
@@ -33,13 +29,13 @@ public class WalletService {
 	@Autowired
 	private WalletRepository repository;
 	
+	@Autowired
+	private DepositRepository depositRepository;
+	
 	 @Autowired
 	 private AuthorizationService authorizationService;
 	
-	@Autowired
-	private RestTemplate restTemplate;
 	
-	private final String AUTH_URL = "https://util.devi.tools/api/v2/authorize";
 
 	public NewWalletDTO insert(NewWalletDTO dto) {
 		
@@ -87,20 +83,7 @@ public class WalletService {
 	}
 	
 	
-	@Transactional
-	public BalanceDTO deposit(Long id, BigDecimal value) {
-		
-		try {
-			Wallet wallet = repository.getReferenceById(id);
-			wallet.setBalance(wallet.getBalance().add(value));
-			wallet = repository.save(wallet);
-			return new BalanceDTO(wallet.getBalance());
-		} catch (EntityNotFoundException e) {
-			throw (new ResourceNotFoundException());
-		}
-		
-
-	}
+	
 
 	@Transactional
 	public TransferResponseDTO transfer(TransferDTO dto) {
@@ -132,9 +115,6 @@ public class WalletService {
 			        .orElseThrow(WalletNotFoundException::new);
 	}
 	
-	private String callAuthorizationMock() {
-	    String url = "https://util.devi.tools/api/v2/authorize";
-	    return restTemplate.getForObject(url, String.class);
-	}
+	
 	
 }

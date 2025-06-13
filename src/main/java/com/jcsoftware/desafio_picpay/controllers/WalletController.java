@@ -17,6 +17,7 @@ import com.jcsoftware.desafio_picpay.entities.dtos.BalanceDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.DepositDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.WalletDTO;
+import com.jcsoftware.desafio_picpay.services.DepositService;
 import com.jcsoftware.desafio_picpay.services.WalletService;
 
 @RestController
@@ -25,6 +26,9 @@ public class WalletController {
 	
 	@Autowired
 	private WalletService service;
+	
+	@Autowired
+	private DepositService depositService;
 	
 	@PostMapping()
 	public ResponseEntity<NewWalletDTO> insert(@RequestBody NewWalletDTO dto){
@@ -49,7 +53,7 @@ public class WalletController {
 	
 	@PostMapping(value="/{id}/deposit")
 	public ResponseEntity<BalanceDTO> deposit(@PathVariable Long id,@RequestBody DepositDTO dto){
-		BalanceDTO balance = service.deposit(id,dto.value());
+		BalanceDTO balance = depositService.insert(id,dto.value());
 		return ResponseEntity.ok().body(balance);
 	}
 }
