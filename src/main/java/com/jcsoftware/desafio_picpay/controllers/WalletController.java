@@ -33,7 +33,7 @@ public class WalletController {
 	private DepositService depositService;
 	
 	@PostMapping()
-	public ResponseEntity<NewWalletDTO> insert(@RequestBody NewWalletDTO dto){
+	public ResponseEntity<NewWalletDTO> insert(@RequestBody @Valid NewWalletDTO dto){
 		NewWalletDTO walletDTO = service.insert(dto);
 	        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 					.buildAndExpand(walletDTO.id()).toUri();
