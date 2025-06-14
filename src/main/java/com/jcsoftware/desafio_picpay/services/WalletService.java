@@ -92,7 +92,7 @@ public class WalletService {
 		Wallet payee = findWalletById(dto.payee());
 		
 		if (payer.getBalance().compareTo(dto.value()) < 0) {
-			return new TransferResponseDTO("Transação não Autorizada (saldo insuficiente");
+			return new TransferResponseDTO("Transação não Autorizada (saldo insuficiente)");
 		}
 		
 		if (!authorizationService.isAuthorized()) {

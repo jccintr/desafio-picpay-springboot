@@ -11,6 +11,8 @@ import com.jcsoftware.desafio_picpay.entities.dtos.TransferDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferResponseDTO;
 import com.jcsoftware.desafio_picpay.services.WalletService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/transfer")
 public class TransferController {
@@ -20,7 +22,7 @@ public class TransferController {
 
 	
 	@PostMapping()
-	public ResponseEntity<TransferResponseDTO> transfer(@RequestBody TransferDTO dto){
+	public ResponseEntity<TransferResponseDTO> transfer(@RequestBody @Valid TransferDTO dto){
 		TransferResponseDTO response = service.transfer(dto);
 	    return ResponseEntity.ok().body(response);
 	}
