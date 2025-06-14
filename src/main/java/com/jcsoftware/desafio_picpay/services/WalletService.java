@@ -8,32 +8,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jcsoftware.desafio_picpay.entities.Transfer;
 import com.jcsoftware.desafio_picpay.entities.Wallet;
-import com.jcsoftware.desafio_picpay.entities.dtos.BalanceDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.NewWalletDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.TransferResponseDTO;
 import com.jcsoftware.desafio_picpay.entities.dtos.WalletDTO;
-import com.jcsoftware.desafio_picpay.repositories.DepositRepository;
+import com.jcsoftware.desafio_picpay.repositories.TransferRepository;
 import com.jcsoftware.desafio_picpay.repositories.WalletRepository;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedDocException;
 import com.jcsoftware.desafio_picpay.services.exceptions.DuplicatedEmailException;
 import com.jcsoftware.desafio_picpay.services.exceptions.ResourceNotFoundException;
 import com.jcsoftware.desafio_picpay.services.exceptions.WalletNotFoundException;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
 public class WalletService {
 
 	@Autowired
 	private WalletRepository repository;
+	@Autowired
+	private TransferRepository transferRepository;
 	
 	@Autowired
-	private DepositRepository depositRepository;
+	private AuthorizationService authorizationService;
 	
-	 @Autowired
-	 private AuthorizationService authorizationService;
+	@Autowired
+	private TransactionService transactionService;
 	
 	
 
@@ -105,7 +105,14 @@ public class WalletService {
 
         payee.setBalance(payee.getBalance().add(dto.value()));
         repository.save(payee);
-
+        
+        Transfer transfer = new Transfer();
+        transfer.setAmount(dto.value());
+        transfer.setWalletPayer(payer);
+        transfer.setWalletPayee(payee);
+        transfer = transferRepository.save(transfer);
+        transactionService.saveTransfer(transfer);
+        
         return new TransferResponseDTO("Transação Autorizada");
         
  	}

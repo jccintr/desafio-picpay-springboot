@@ -22,6 +22,8 @@ public class DepositService {
 	private DepositRepository repository;
 	@Autowired
 	private WalletRepository walletRepository;
+	@Autowired
+	private TransactionService transactionService;
 	
 	@Transactional
 	public BalanceDTO insert(Long id, BigDecimal value) {
@@ -33,7 +35,9 @@ public class DepositService {
 			Deposit newDeposit = new Deposit();
 			newDeposit.setAmount(value);
 			newDeposit.setWallet(wallet);
-			repository.save(newDeposit);
+			newDeposit = repository.save(newDeposit);
+			// registra a transação de deposito
+			transactionService.saveDeposit(wallet, newDeposit, value);
 			return new BalanceDTO(wallet.getBalance());
 		} catch (EntityNotFoundException e) {
 			throw (new ResourceNotFoundException());
